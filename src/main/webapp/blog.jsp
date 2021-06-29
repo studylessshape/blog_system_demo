@@ -30,7 +30,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <div class="user-child">
                         Hello,
                         <div style="display: inline-block; font-weight: bold">
-                            ${user.name}
+                            <a class="a-button-type2" href="blog?type=userpage">${user.name}</a>
                         </div>
                     </div>
                     <div class="user-child">

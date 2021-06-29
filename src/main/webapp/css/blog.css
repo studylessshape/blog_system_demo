@@ -69,12 +69,21 @@ textarea {
 
 .a-button {
     text-decoration: none;
-    color: inherit;
     cursor: pointer;
     padding: 10px 15px 10px 15px;
     background-color: brown;
     border-radius: 10px;
     color: white;
+}
+
+.a-button-type2 {
+    text-decoration: none;
+    cursor: pointer;
+    color: white;
+}
+
+.a-button-type2:hover {
+    text-decoration: underline;
 }
 
 .a-button:hover, input[type="submit"]:hover,input[type="reset"]:hover, input[type="button"]:hover {

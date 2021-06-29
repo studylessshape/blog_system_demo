@@ -6,6 +6,7 @@ public class User {
     private String password;
     private String name;
     private int authority;
+    private int state;
 
     public User() {
         super();
@@ -53,5 +54,13 @@ public class User {
 
     public void setAuthority(int authority) {
         this.authority = authority;
+    }
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
     }
 }

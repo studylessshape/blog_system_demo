@@ -30,7 +30,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         <div class="nav-child user">
             <c:choose>
                 <c:when test="${isUser}">
-                    <div class="user-child">Hello, <div style="display: inline-block;font-weight: bold;">${user.name}</div></div>
+                    <div class="user-child">Hello, <div style="display: inline-block;font-weight: bold;"><a class="a-button-type2" href="blog?type=userpage">${user.name}</a></div></div>
                     <div class="user-child"><a href="./blog?type=signout&blog_id=${blog.blog_id}" class="a-button">退出</a></div>
                 </c:when>
                 <c:otherwise>
@@ -69,10 +69,18 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <c:if test="${ua.id == user.authority}">
                 <c:choose>
                     <c:when test="${ua.name eq '管理员'}">
-                        <div class="modify-button-wrap"><a class="a-button" href="blog?type=modify&blog_id=${blog.blog_id}">编辑</a></div>
+                        <div class="modify-button-wrap">
+                            <a class="a-button" href="blog?type=modify&blog_id=${blog.blog_id}">编辑</a>
+                            <a class="a-button"
+                                href="javascript:if(confirm('确认删除？')){location.href='blog?type=del&blog_id=${blog.blog_id}'}">删除</a>
+                        </div>
                     </c:when>
                     <c:when test="${ua.name eq '系统'}">
-                        <div class="modify-button-wrap"><a class="a-button" href="blog?type=modify&blog_id=${blog.blog_id}">编辑</a></div>   
+                        <div class="modify-button-wrap">
+                            <a class="a-button" href="blog?type=modify&blog_id=${blog.blog_id}">编辑</a>
+                            <a class="a-button"
+                                href="javascript:if(confirm('确认删除？')){location.href='blog?type=del&blog_id=${blog.blog_id}'}">删除</a>
+                        </div>
                     </c:when>
                     <c:otherwise></c:otherwise>
                 </c:choose>
