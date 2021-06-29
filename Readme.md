@@ -42,3 +42,15 @@
 
 #### `comments`
 该表作用在于储存评论信息，暂未使用
+
+## 使用到的项目
+- [marked](https://github.com/markedjs/marked)
+- [highlight.js](https://highlightjs.org/)
+- [Tomcat](https://tomcat.apache.org/)
+- [maven](http://maven.apache.org/)
+- [mysql](https://www.jetbrains.com/idea/)
+
+使用的IDE/编辑器
+- [IDEA](https://www.jetbrains.com/idea/)
+- [DBeaver CE](https://dbeaver.io/)
+- [vscode](https://code.visualstudio.com/)
