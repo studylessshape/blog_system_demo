@@ -41,7 +41,20 @@
 |`content`|`text`|博客内容|
 
 #### `comments`
-该表作用在于储存评论信息，暂未使用
+该表作用在于储存评论信息。
+|属性|类型|描述|
+|---|---|---|
+|`id`|`int`|主键，自增，用于标识评论|
+|`blog_id`|`int`|外键，参照`blog.id`，级联更新|
+|`user_id`|`int`|外键，参照`userInfo.id`，级联更新|
+|`content`|`tinytext`|评论内容非空|
+
+#### `user_state`
+该表作用在于储存评论信息。
+|属性|类型|描述|
+|---|---|---|
+|`user_id`|`int`|外键，不可重复，参照`userInfo.id`，级联更新|
+|`state`|`int`|用户状态，非空|
 
 ## 使用到的项目
 - [marked](https://github.com/markedjs/marked)

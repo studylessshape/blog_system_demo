@@ -41,7 +41,7 @@
 
 .op-wrap {
     margin-left: 5px;
-    border-right: 1px solid red;
+    border-left: 1px solid red;
 }
 
 .op-wrap > a {
