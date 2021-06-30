@@ -61,7 +61,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             </div>
                             <div class="comment-content">
                                 <div class="content-info">
-                                    ${comment.content}
+                                    <c:out value="${comment.content}"></c:out>
                                 </div>
                             </div>
                             <!-- 评论操作的加载 -->

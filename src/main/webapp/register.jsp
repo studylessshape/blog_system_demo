@@ -14,7 +14,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
     <meta http-equiv="description" content="This is my page">
     <link rel="stylesheet" type="text/css" href="css/blog.css">
-    <script src="js/login.js"></script>
+    <script src="js/jquery-1.4.2.min.js"></script>
+    <script src="js/register.js"></script>
     <title>注册账户</title>
 </head>
 <body>
@@ -29,15 +30,18 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <form action="blog?type=register" method="post" id="register-form">
                 <div class="input">
                     <div class="input-head">昵称:</div>
-                    <input type="text" name="display-name" id="display-name" maxlength="20" placeholder="昵称" onkeyup='if(event.keyCode==13){check_register();}'>
+                    <input type="text" name="display-name" id="display-name" maxlength="20" placeholder="昵称" onkeyup='if(event.keyCode==13){check_register();}' oninput="check_display_name();">
+                    <span id="error-name"></span>
                 </div>
                 <div class="input">
                     <div class="input-head">账户名:</div>
-                    <input type="text" name="username" id="username" maxlength="20" placeholder="账户名" onkeyup='if(event.keyCode==13){check_register();}'>
+                    <input type="text" name="username" id="username" maxlength="20" placeholder="账户名" onkeyup='if(event.keyCode==13){check_register();}' oninput="check_name();">
+                    <span id="error-user"></span>
                 </div>
                 <div class="input">
                     <div class="input-head">密码:</div>
-                    <input type="password" name="password" id="password" maxlength="20" placeholder="密码" onkeyup='if(event.keyCode==13){check_register();}'>
+                    <input type="password" name="password" id="password" maxlength="20" placeholder="密码" onkeyup='if(event.keyCode==13){check_register();}' oninput="check_password();">
+                    <span id="error-pwd"></span>
                 </div>
                 <div class="buttons">
                     <input style="width: 48%;" type="button" value="注册" onclick="check_register()"><input style="width: 48%;" type="reset" value="重置">

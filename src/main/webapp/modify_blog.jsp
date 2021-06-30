@@ -83,7 +83,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     <div class="input-head">简介:</div>
                     <input type="text" name="blog-summary" id="blog-summary" maxlength="250" value='${blog_content.summary}'>
                 </div>
-                <div class="input">
+                <div class="input" style="align-items: flex-start; width: 100%;">
                     <div class="input-head">内容( Markdown 格式):</div>
                     <textarea name="content" id="input-feild" cols="30" rows="10" oninput="update_onchange();">${blog_content.content}</textarea>
                 </div>

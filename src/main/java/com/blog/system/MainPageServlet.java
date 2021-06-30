@@ -166,31 +166,37 @@ public class MainPageServlet extends HttpServlet {
     }
 
     void registerAction(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
+        String target = request.getParameter("target");
         String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String displayName = request.getParameter("display-name");
         if (username != null && username.length() > 0) {
             User user = userDao.findByUsername(username);
             if (user != null) {
-                out.println("<script>alert('账户已存在！')</script>");
-                setUser(null, request, response);
+                out.print("user-exist");
             } else {
-                if (password != null && password.length() > 0 && displayName != null && displayName.length() > 0) {
-                    user = new User(0, username, password, displayName, 3);
-                    if (userDao.addSql(user)) {
-                        user = userDao.findByUsername(username);
-                        if (user != null) {
-                            setUser(user, request, response);
-                            out.println("<script>alert('创建成功！');location.href='/blog_system'</script>");
-                            return;
-                        }
-                    }
-                }
-                setUser(null, request, response);
-                out.println("<script>alert('创建失败！')</script>");
+                out.print("user-none");
             }
         }
-        out.println("<script>location.href='./register.jsp'</script>");
+
+        if ("check".equals(target)) {
+            return;
+        }
+
+        String password = request.getParameter("password");
+        String displayName = request.getParameter("display-name");
+        if (password != null && password.length() > 0 && displayName != null && displayName.length() > 0) {
+            User user = new User(0, username, password, displayName, 3);
+            if (userDao.addSql(user)) {
+                user = userDao.findByUsername(username);
+                if (user != null) {
+                    setUser(user, request, response);
+                    out.println("<script>alert('创建成功！');location.href='/blog_system'</script>");
+                    return;
+                }
+            }
+            setUser(null, request, response);
+        }
+
+        out.println("<script>alert('创建失败！');history.go(-1);</script>");
     }
 
     void signOutAction(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {

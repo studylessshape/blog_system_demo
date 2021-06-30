@@ -241,7 +241,15 @@ textarea {
     box-sizing:border-box;
     margin-top: 10px;
     margin-bottom: 10px;
-    justify-content: space-between;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.input > span {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: left;
 }
 
 .input-head {
@@ -296,7 +304,7 @@ input[type="text"]:focus,input[type="password"]:focus,textarea:focus {
 }
 
 .buttons {
-    width: 100%;
+    width: 265px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -357,6 +365,7 @@ input[type="text"]:focus,input[type="password"]:focus,textarea:focus {
 .input-edit-wrap > form > .input > textarea {
     border: 1px solid black;
     flex-grow: 1;
+    width: 100%;
 }
 
 .output-edit-wrap {

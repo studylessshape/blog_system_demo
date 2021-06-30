@@ -62,6 +62,7 @@
 - [Tomcat](https://tomcat.apache.org/)
 - [maven](http://maven.apache.org/)
 - [mysql](https://www.jetbrains.com/idea/)
+- [jQuery](https://jquery.com/)
 
 使用的IDE/编辑器
 - [IDEA](https://www.jetbrains.com/idea/)
