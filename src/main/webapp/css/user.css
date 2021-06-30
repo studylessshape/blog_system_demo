@@ -43,18 +43,12 @@
     align-self: start;
 }
 
-.panel-detail-wrap:first-child {
-    position: relative;
-}
-
 .panel-detail-wrap {
+    position: relative;
     display: block;
     position: absolute;
     top: 0;
     left: 0;
-}
-
-.panel-detail-wrap:last-child {
     top: -20px;
 }
 

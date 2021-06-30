@@ -382,3 +382,11 @@ code {
     bottom: 20px;
     right: 20px;
 }
+
+img,iframe {
+    max-width: 100%;
+}
+
+iframe {
+    margin: auto;
+}

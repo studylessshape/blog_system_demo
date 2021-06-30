@@ -13,12 +13,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <meta http-equiv="expires" content="0">
     <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
     <meta http-equiv="description" content="This is my page">
-    <meta name="referrer" content="no-referrer" />
+    <meta content="always" name="referrer">
     <link rel="stylesheet" type="text/css" href="css/blog.css">
+    <link rel="stylesheet" type="text/css" href="css/comment.css">
     <script src="js/login.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="highlight/styles/default.min.css">
     <script src="highlight/highlight.min.js"></script>
+    <script src="js/comment.js"></script>
     <title>${blog.title}</title>
     <script>hljs.initHighlightingOnLoad();</script>
 </head>
@@ -46,7 +48,85 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             <div class="date-wrap"><p class="date">${blog.date}</p></div>
             <div class="blog-content-wrap" id="blog-content"></div>
         </div>
+        <div style="margin: 40px 25% 0 25%;">评论</div>
+        <div class="comments">
+            <c:forEach items="${comments}" var="comment">
+                <c:forEach items="${users}" var="us">
+                    <c:if test="${us.id == comment.userId}">
+                        <div class="comment-wrap">
+                            <div class="comment-head">
+                                <div class="head-info">
+                                    ${us.name} 说:
+                                </div>
+                            </div>
+                            <div class="comment-content">
+                                <div class="content-info">
+                                    ${comment.content}
+                                </div>
+                            </div>
+                            <!-- 评论操作的加载 -->
+                            <c:if test="${isUser}">
+                                <c:choose>
+                                    <c:when test="${us.id == user.id}">
+                                        <div class="op-wrap">
+                                            <a href="javascript:if(confirm('是否删除？')){location.href='blog?type=delComments&user_id=${comment.userId}&comment_id=${comment.id}&blog_id=${comment.blogId}'}">删除评论</a>
+                                        </div>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach items="${user_authority}" var="ua">
+                                            <c:if test="${ua.id == user.authority}">
+                                                <c:choose>
+                                                    <c:when test="${ua.name eq '管理员'}">
+                                                        <c:forEach items="${user_authority}" var="uac">
+                                                            <c:if test="${uac.id == us.authority}">
+                                                                <c:choose>
+                                                                    <c:when test="${uac.name eq '管理员'}"></c:when>
+                                                                    <c:when test="${uac.name eq '系统'}"></c:when>
+                                                                    <c:otherwise>
+                                                                        <div class="op-wrap">
+                                                                            <a href="javascript:if(confirm('是否删除？')){location.href='blog?type=delComments&user_id=${comment.userId}&comment_id=${comment.id}&blog_id=${comment.blogId}'}">删除评论</a>
+                                                                        </div>
+                                                                    </c:otherwise>
+                                                                </c:choose>
+                                                            </c:if>
+                                                        </c:forEach>
+                                                    </c:when>
+                                                    <c:when test="${ua.name eq '系统'}">
+                                                        <div class="op-wrap">
+                                                            <a href="javascript:if(confirm('是否删除？')){location.href='blog?type=delComments&user_id=${comment.userId}&comment_id=${comment.id}&blog_id=${comment.blogId}'}">删除评论</a>
+                                                        </div>
+                                                    </c:when>
+                                                    <c:otherwise></c:otherwise>
+                                                </c:choose>
+                                            </c:if>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </c:if>
+                        </div>
+                    </c:if>
+                </c:forEach>
+            </c:forEach>
+        </div>
+        <c:if test="${user.state == 0}">
+            <div class="send-comments">
+                <div class="send-comment-wrap">
+                    <div class="send-head">
+                        发表评论:
+                    </div>
+                    <div class="send-content">
+                        <form action="blog?type=addComment" method="post" id="add-comment">
+                            <input type="hidden" name="blog_id" value="${blog.blog_id}">
+                            <textarea name="comment_content" id="comment-content" cols="30" rows="10"></textarea>
+                            <input type="button" value="发表" onclick="submit_comment()">
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <script>init_comment_js();</script>
+        </c:if>
     </div>
+
     <div id="login-block" style="visibility: hidden;">
         <div class="login">
             <div class="close"><a href="javascript:hidden_login()" style="text-align: right;" class="a-decoration-none a-color-inherit">X</a></div>
@@ -87,6 +167,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             </c:if>
         </c:forEach>
     </c:if>
+
     <script>init_for_blog();</script>
     <script>
         var content = document.getElementById('blog-content');

@@ -1,9 +1,6 @@
 package com.blog.system;
 
-import dao.BlogPageContentDao;
-import dao.BlogPageInfoDao;
-import dao.UserAuthorityDao;
-import dao.UserDao;
+import dao.*;
 import entity.*;
 
 import javax.servlet.ServletException;
@@ -14,15 +11,16 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class MainPageServlet extends HttpServlet {
-    BlogPageInfoDao bpid = new BlogPageInfoDao();
-    BlogPageContentDao bpcd = new BlogPageContentDao();
+    BlogPageInfoDao blogInfoDao = new BlogPageInfoDao();
+    BlogPageContentDao blogContentDao = new BlogPageContentDao();
 
-    UserDao ud = new UserDao();
-    UserAuthorityDao uad = new UserAuthorityDao();
+    UserDao userDao = new UserDao();
+    UserAuthorityDao userAuthorityDao = new UserAuthorityDao();
+
+    CommentDao commentDao = new CommentDao();
 
     List<UserAuthority> authorities = null;
 
@@ -41,7 +39,7 @@ public class MainPageServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         if (authorities == null || authorities.size() == 0) {
-            authorities = uad.find(null);
+            authorities = userAuthorityDao.find(null);
         }
 
         User user = getCookieLogin(request);
@@ -70,7 +68,7 @@ public class MainPageServlet extends HttpServlet {
 
         User user = null;
         if (username_cookie != null && password_cookie != null) {
-            user = ud.login(username_cookie.getValue(), password_cookie.getValue());
+            user = userDao.login(username_cookie.getValue(), password_cookie.getValue());
         }
 
         return user;
@@ -109,7 +107,7 @@ public class MainPageServlet extends HttpServlet {
     }
 
     void basePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<BlogPageInfo> list = bpid.find(null);
+        List<BlogPageInfo> list = blogInfoDao.find(null);
         Collections.reverse(list);
         request.setAttribute("blog_list", list);
         request.getRequestDispatcher("/blog.jsp").forward(request, response);
@@ -134,20 +132,26 @@ public class MainPageServlet extends HttpServlet {
             case "modifyUser": modifyUserAction(request,out);break;
             case "ban": banUserAction(request, out);break;
             case "delUser": deleteUserAction(request, out);break;
+            case "delComments": deleteCommentsAction(request, out);break;
+            case "addComment": addCommentAction(request, out);break;
         }
     }
 
     void readAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String blogId = request.getParameter("blog_id");
-        BlogPageContent bpc = bpcd.find(blogId).get(0);
+        BlogPageContent bpc = blogContentDao.find(blogId).get(0);
+        List<Comment> comments = commentDao.find(blogId);
+        List<User> users = userDao.find(null);
         request.setAttribute("blog", bpc);
+        request.setAttribute("comments", comments);
+        request.setAttribute("users", users);
         request.getRequestDispatcher("one-blog.jsp").forward(request, response);
     }
 
     void loginAction(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        User user = ud.login(username, password);
+        User user = userDao.login(username, password);
         setUser(user, request,response);
         if (user == null) {
             out.println("<script>alert('用户名或密码错误！')</script>");
@@ -166,15 +170,15 @@ public class MainPageServlet extends HttpServlet {
         String password = request.getParameter("password");
         String displayName = request.getParameter("display-name");
         if (username != null && username.length() > 0) {
-            User user = ud.findByUsername(username);
+            User user = userDao.findByUsername(username);
             if (user != null) {
                 out.println("<script>alert('账户已存在！')</script>");
                 setUser(null, request, response);
             } else {
                 if (password != null && password.length() > 0 && displayName != null && displayName.length() > 0) {
                     user = new User(0, username, password, displayName, 3);
-                    if (ud.addSql(user)) {
-                        user = ud.findByUsername(username);
+                    if (userDao.addSql(user)) {
+                        user = userDao.findByUsername(username);
                         if (user != null) {
                             setUser(user, request, response);
                             out.println("<script>alert('创建成功！');location.href='/blog_system'</script>");
@@ -208,9 +212,9 @@ public class MainPageServlet extends HttpServlet {
                 new Date(cal.get(Calendar.YEAR) - 1900, cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)),
                 request.getParameter("content")
         );
-        if (bpcd.addSql(dpc)) {
+        if (blogContentDao.addSql(dpc)) {
             out.println("<script>alert('成功添加新博客！')</script>");
-            List<BlogPageInfo> listInfo = bpid.find(null);
+            List<BlogPageInfo> listInfo = blogInfoDao.find(null);
             int newId = listInfo.get(listInfo.size() - 1).getId();
             out.println("<script>location.href='./blog?type=read&blog_id="+newId+"'</script>");
         } else {
@@ -230,7 +234,7 @@ public class MainPageServlet extends HttpServlet {
         }
         String blog_id = request.getParameter("blog_id");
         if (blog_id != null && blog_id.length() > 0) {
-            if (!bpid.deleteSql(blog_id)) {
+            if (!blogInfoDao.deleteSql(blog_id)) {
                 out.println("<script>alert('删除失败！')</script>");
             }
         } else {
@@ -242,7 +246,7 @@ public class MainPageServlet extends HttpServlet {
     void modifyAction(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws ServletException, IOException {
         String blog_id = request.getParameter("blog_id");
         if (blog_id != null && blog_id.length() > 0) {
-            BlogPageContent bpc = bpcd.find(blog_id).get(0);
+            BlogPageContent bpc = blogContentDao.find(blog_id).get(0);
             request.setAttribute("blog_content", bpc);
             request.getRequestDispatcher("./modify_blog.jsp").forward(request, response);
         } else {
@@ -260,7 +264,7 @@ public class MainPageServlet extends HttpServlet {
                 request.getParameter("content")
         );
 
-        if (bpcd.updateSql(blogPageContent)) {
+        if (blogContentDao.updateSql(blogPageContent)) {
             out.println("<script>location.href='./blog?type=read&blog_id="+blogPageContent.getBlog_id()+"'</script>");
         } else {
             out.println("<script>alert('更新失败！')</script>");
@@ -271,11 +275,15 @@ public class MainPageServlet extends HttpServlet {
     void enterUserPageAction(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         User user = getCookieLogin(request);
         setUser(getCookieLogin(request), request, response);
+
+        boolean isAdmin = false;
+
         for (UserAuthority ua : authorities) {
             if (ua.getId() == user.getId()) {
                 if (ua.getName().equals("管理员") || ua.getName().equals("系统")) {
-                    List<User> users = ud.find(null);
-                    List<UserState> userStates = ud.findUserState(null);
+                    isAdmin = true;
+                    List<User> users = userDao.find(null);
+                    List<UserState> userStates = userDao.findUserState(null);
 
                     for (int i = 0;i != users.size();i ++) {
                         if (users.get(i).getUserName().equals("root")) {
@@ -298,18 +306,23 @@ public class MainPageServlet extends HttpServlet {
                 }
             }
         }
-        request.getRequestDispatcher("./user_info.jsp").forward(request, response);
+        String target=request.getParameter("target");
+        if (target != null && target.equals("manage") && isAdmin) {
+            request.getRequestDispatcher("./user_manage.jsp").forward(request, response);
+        } else {
+            request.getRequestDispatcher("./user_info.jsp").forward(request, response);
+        }
     }
 
     void modifyUserAction(HttpServletRequest request, PrintWriter out) {
         String id = request.getParameter("id");
-        User user = ud.find(id).get(0);
+        User user = userDao.find(id).get(0);
         String display_name = request.getParameter("display-name");
         String new_password = request.getParameter("new-password");
         user.setName(display_name);
         user.setPassword(new_password);
 
-        if (ud.updateSql(user)) {
+        if (userDao.updateSql(user)) {
             out.println("<script>alert('修改成功！重新登录以确认密码！')</script>");
             out.println("<script>location.href='./blog?type=signout'</script>");
         } else {
@@ -321,7 +334,7 @@ public class MainPageServlet extends HttpServlet {
     void banUserAction(HttpServletRequest request, PrintWriter out) {
         User user = getCookieLogin(request);
         String id = request.getParameter("user_id");
-        User target_user = ud.find(id).get(0);
+        User target_user = userDao.find(id).get(0);
         if (target_user == null || user == null) {
             out.println("<script>alert('用户不存在！');history.go(-1)</script>");
             return;
@@ -375,16 +388,16 @@ public class MainPageServlet extends HttpServlet {
             default:out.println("<script>alert('未知状态参数！');history.go(-1)</script>");return;
         }
 
-        if (!ud.updateState(target_user)) {
+        if (!userDao.updateState(target_user)) {
             out.println("<script>alert('更改状态失败！');</script>");
         }
-        out.println("<script>location.href='blog?type=userpage'</script>");
+        out.println("<script>location.href='blog?type=userpage&target=manage'</script>");
     }
 
     void deleteUserAction(HttpServletRequest request, PrintWriter out) {
         User user = getCookieLogin(request);
         String id = request.getParameter("user_id");
-        User target_user = ud.find(id).get(0);
+        User target_user = userDao.find(id).get(0);
         if (user == null || target_user == null) {
             out.println("<script>alert('用户不存在！');history.go(-1)</script>");
             return;
@@ -420,9 +433,84 @@ public class MainPageServlet extends HttpServlet {
             return;
         }
 
-        if (!ud.deleteSql(id)) {
+        if (!userDao.deleteSql(id)) {
             out.println("<script>alert('删除失败！');</script>");
         }
-        out.println("<script>location.href='blog?type=userpage'</script>");
+        out.println("<script>location.href='blog?type=userpage&target=manage';</script>");
+    }
+
+    void deleteCommentsAction(HttpServletRequest request, PrintWriter out) {
+        User cUser = getCookieLogin(request);
+        if (cUser == null) {
+            out.println("<script>alert('你还未登录！');history.go(-1)</script>");
+            return;
+        }
+
+        String userId=request.getParameter("user_id");
+        User targetUser = userDao.find(userId).get(0);
+
+        boolean isAdmin = false;
+        boolean isRoot = false;
+
+        boolean isTargetAdmin = false;
+        boolean isTargetRoot = false;
+
+        for (UserAuthority ua : authorities) {
+            if (cUser.getAuthority() == ua.getId()) {
+                if (ua.getName().equals("管理员")) {
+                    isAdmin = true;
+                } else if (ua.getName().equals("系统")) {
+                    isAdmin = true;
+                    isRoot = true;
+                }
+            } else if (targetUser.getAuthority() == ua.getId()) {
+                if (ua.getName().equals("管理员")) {
+                    isTargetAdmin = true;
+                } else if (ua.getName().equals("系统")) {
+                    isAdmin = true;
+                    isTargetRoot = true;
+                }
+            }
+        }
+
+        if (cUser.getId() != targetUser.getId()) {
+            if (!isAdmin || (isAdmin && !isRoot && (isTargetAdmin || isTargetRoot))) {
+                out.println("<script>alert('权限不足！');history.go(-1)</script>");
+                return;
+            }
+        }
+
+        String blogId = request.getParameter("blog_id");
+        String commentId = request.getParameter("comment_id");
+
+        if (commentDao.deleteSql(commentId)) {
+            out.println("<script>location.href='blog?type=read&blog_id="+blogId+"'</script>");
+        } else {
+            out.println("<script>alert('删除失败！');history.go(-1)</script>");
+        }
+    }
+
+    void addCommentAction(HttpServletRequest request, PrintWriter out) {
+        User user = getCookieLogin(request);
+        if (user == null) {
+            out.println("<script>alert('你还未登录！');history.go(-1)</script>");
+            return;
+        }
+
+        if (user.getState() == 1) {
+            out.println("<script>alert('账户已被禁言！');history.go(-1)</script>");
+            return;
+        }
+
+        String blogId = request.getParameter("blog_id");
+        String content = request.getParameter("comment_content");
+
+        Comment comment = new Comment(0, Integer.parseInt(blogId), user.getId(), content);
+
+        if (commentDao.addSql(comment)) {
+            out.println("<script>location.href='blog?type=read&blog_id="+blogId+"'</script>");
+        } else {
+            out.println("<script>alert('发表失败！');history.go(-1)</script>");
+        }
     }
 }

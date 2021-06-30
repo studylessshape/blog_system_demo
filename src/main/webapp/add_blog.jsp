@@ -19,7 +19,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="js/update_edit.js"></script>
     <link rel="stylesheet" href="highlight/styles/default.min.css">
-    <meta name="referrer" content="no-referrer" />
+    <meta content="always" name="referrer">
     <script src="highlight/highlight.min.js"></script>
     <script>hljs.initHighlightingOnLoad();</script>
     <title>添加博客</title>

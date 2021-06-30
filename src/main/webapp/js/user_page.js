@@ -7,15 +7,10 @@ function init_items() {
 }
 
 function show(index) {
-    if (index < 0 || index >= detail_wraps.length) {
-        return;
-    }
-
-    for(var i = 0;i < detail_wraps.length;i ++) {
-        detail_wraps[i].style.visibility = 'hidden';
-        if (i == index) {
-            detail_wraps[i].style.visibility = 'visible';
-        }
+    if (index == 0) {
+        location.href = 'blog?type=userpage';
+    } else if (index == 1) {
+        location.href = 'blog?type=userpage&target=manage';
     }
 }
 
