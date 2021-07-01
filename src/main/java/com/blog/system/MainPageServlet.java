@@ -154,14 +154,9 @@ public class MainPageServlet extends HttpServlet {
         User user = userDao.login(username, password);
         setUser(user, request,response);
         if (user == null) {
-            out.println("<script>alert('用户名或密码错误！')</script>");
-        }
-
-        String blogId = request.getParameter("blog_id");
-        if (blogId == null || blogId.length() == 0) {
-            out.println("<script>location.href='./'</script>");
+            out.print("login-error");
         } else {
-            out.println("<script>location.href='blog?type=read&blog_id=" + blogId + "'</script>");
+            out.print("login-success");
         }
     }
 

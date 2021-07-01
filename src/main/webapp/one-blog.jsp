@@ -16,11 +16,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <meta content="always" name="referrer">
     <link rel="stylesheet" type="text/css" href="css/blog.css">
     <link rel="stylesheet" type="text/css" href="css/comment.css">
-    <script src="js/login.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="highlight/styles/default.min.css">
     <script src="highlight/highlight.min.js"></script>
+    <script src="js/jquery-1.4.2.min.js"></script>
     <script src="js/comment.js"></script>
+    <script src="js/login.js"></script>
     <title>${blog.title}</title>
     <script>hljs.initHighlightingOnLoad();</script>
 </head>
@@ -131,17 +132,19 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         <div class="login">
             <div class="close"><a href="javascript:hidden_login()" style="text-align: right;" class="a-decoration-none a-color-inherit">X</a></div>
             <div class="login-title">登录帐号</div>
-            <form action="blog?type=login&blog_id=${blog.blog_id}" method="post">
+            <div class="input-feild">
                 <div class="input">
                     <input type="text" name="username" id="username" placeholder="帐号" onkeyup='if(event.keyCode==13){check_login();}'>
                 </div>
                 <div class="input">
                     <input type="password" name="password" id="password" placeholder="密码" onkeyup='if(event.keyCode==13){check_login();}'>
                 </div>
-                <input type="submit" value="登录">
-            </form>
+                <div id="error-login"></div>
+                <input type="button" value="登录" onclick="check_login();">
+            </div>
         </div>
     </div>
+
     <input type="hidden" style="position: fixed;display: block; top: 0;" id="blog-content-value" value='${blog.content}'></input>
 
     <c:if test="${isUser}">
@@ -168,7 +171,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         </c:forEach>
     </c:if>
 
-    <script>init_for_blog();</script>
     <script>
         var content = document.getElementById('blog-content');
         var value = document.getElementById('blog-content-value').value;

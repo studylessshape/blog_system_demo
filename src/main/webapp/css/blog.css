@@ -235,6 +235,11 @@ textarea {
     font-weight: bolder;
 }
 
+#error-login {
+    font-weight: normal;
+    font-size: 15px;
+}
+
 .input {
     display: flex;
     flex-direction: row;

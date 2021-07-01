@@ -15,6 +15,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <meta http-equiv="keywords" content="keyword1,keyword2,keyword3" />
     <meta http-equiv="description" content="This is my page" />
     <link rel="stylesheet" type="text/css" href="css/blog.css" />
+    <script src="js/jquery-1.4.2.min.js"></script>
     <script src="js/login.js"></script>
     <title>我的博客</title>
 </head>
@@ -92,6 +93,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             </c:forEach>
         </div>
     </div>
+
+    <div id="login-block" style="visibility: hidden;">
+        <div class="login">
+            <div class="close"><a href="javascript:hidden_login()" style="text-align: right;" class="a-decoration-none a-color-inherit">X</a></div>
+            <div class="login-title">登录帐号</div>
+            <div class="input-feild">
+                <div class="input">
+                    <input type="text" name="username" id="username" placeholder="帐号" onkeyup='if(event.keyCode==13){check_login();}'>
+                </div>
+                <div class="input">
+                    <input type="password" name="password" id="password" placeholder="密码" onkeyup='if(event.keyCode==13){check_login();}'>
+                </div>
+                <div id="error-login"></div>
+                <input type="button" value="登录" onclick="check_login();">
+            </div>
+        </div>
+    </div>
+
     <c:if test="${isUser}">
         <c:forEach items="${user_authority}" var="ua">
             <c:if test="${ua.id == user.authority}">
@@ -125,9 +144,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             </c:if>
         </c:forEach>
     </c:if>
-    <script>
-        init_login();
-    </script>
     <footer>copyright:学少何</footer>
 </body>
 

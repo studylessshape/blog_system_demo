@@ -50,12 +50,6 @@ function check_password() {
     }
 }
 
-// $(function() {
-//     $("#display-name").oninput(check_display_name);
-//     $("#username").oninput(check_name);
-//     $("#password").oninput(check_password);
-// })
-
 function check_register() {
     if (isName && isPassword && isUsername) {
         $("#register-form").submit();
