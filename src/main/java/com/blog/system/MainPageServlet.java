@@ -130,6 +130,7 @@ public class MainPageServlet extends HttpServlet {
             case "modifyBlog": modifyBlogAction(request, out);break;
             case "userpage": enterUserPageAction(request, response);break;
             case "modifyUser": modifyUserAction(request,out);break;
+            case "changePWD": changePasswordAction(request, response, out);break;
             case "ban": banUserAction(request, out);break;
             case "delUser": deleteUserAction(request, out);break;
             case "delComments": deleteCommentsAction(request, out);break;
@@ -308,24 +309,80 @@ public class MainPageServlet extends HttpServlet {
             }
         }
         String target=request.getParameter("target");
-        if (target != null && target.equals("manage") && isAdmin) {
-            request.getRequestDispatcher("./user_manage.jsp").forward(request, response);
-        } else {
+        if (target == null) {
             request.getRequestDispatcher("./user_info.jsp").forward(request, response);
+            return;
+        }
+        switch (target) {
+            case "manage": {
+                if (isAdmin) {
+                    request.getRequestDispatcher("./user_manage.jsp").forward(request, response);
+                } else {
+                    request.getRequestDispatcher("./user_info.jsp").forward(request, response);
+                }
+                break;
+            }
+            case "changePWD": request.getRequestDispatcher("./user_password.jsp").forward(request, response);break;
+            default: request.getRequestDispatcher("./user_info.jsp").forward(request, response);break;
+        }
+
+    }
+
+    void changePasswordAction(HttpServletRequest request,HttpServletResponse response, PrintWriter out) {
+        User user = getCookieLogin(request);
+        if (user == null) {
+            out.println("<script>alert('用户未登录！');location.href='./'</script>");
+            return;
+        }
+
+        String id = request.getParameter("id");
+        if (id == null) {
+            out.println("<script>alert('用户不存在！');location.reload();</script>");
+            return;
+        }
+
+        User targetUser = userDao.find(id).get(0);
+        if (user.getId() != targetUser.getId()) {
+            out.println("<script>alert('用户ID错误！');location.reload();</script>");
+            return;
+        }
+
+        String newPassword = request.getParameter("new-password");
+
+        targetUser.setPassword(newPassword);
+        if (userDao.updateSql(targetUser)) {
+            setUser(targetUser,request,response);
+            out.println("<script>alert('修改成功！')</script>");
+            out.println("<script>location.href='blog?type=userpage&target=changePWD'</script>");
+        } else {
+            out.println("<script>alert('修改失败！')</script>");
+            out.println("<script>history.go(-1)</script>");
         }
     }
 
     void modifyUserAction(HttpServletRequest request, PrintWriter out) {
-        String id = request.getParameter("id");
-        User user = userDao.find(id).get(0);
-        String display_name = request.getParameter("display-name");
-        String new_password = request.getParameter("new-password");
-        user.setName(display_name);
-        user.setPassword(new_password);
+        User user = getCookieLogin(request);
+        if (user == null) {
+            out.println("<script>alert('用户未登录！');location.href='./'</script>");
+            return;
+        }
 
-        if (userDao.updateSql(user)) {
-            out.println("<script>alert('修改成功！重新登录以确认密码！')</script>");
-            out.println("<script>location.href='./blog?type=signout'</script>");
+        String id = request.getParameter("id");
+        if (id == null) {
+            out.println("<script>alert('用户不存在！');location.reload();</script>");
+            return;
+        }
+
+        User targetUser = userDao.find(id).get(0);
+        if (user.getId() != targetUser.getId()) {
+            out.println("<script>alert('用户ID错误！');location.reload();</script>");
+            return;
+        }
+        String display_name = request.getParameter("display-name");
+        targetUser.setName(display_name);
+
+        if (userDao.updateSql(targetUser)) {
+            out.println("<script>location.href='./blog?type=userpage'</script>");
         } else {
             out.println("<script>alert('修改失败！')</script>");
             out.println("<script>history.go(-1)</script>");
@@ -475,7 +532,7 @@ public class MainPageServlet extends HttpServlet {
         }
 
         if (cUser.getId() != targetUser.getId()) {
-            if (!isAdmin || (isAdmin && !isRoot && (isTargetAdmin || isTargetRoot))) {
+            if (!isAdmin || (!isRoot && (isTargetAdmin || isTargetRoot))) {
                 out.println("<script>alert('权限不足！');history.go(-1)</script>");
                 return;
             }

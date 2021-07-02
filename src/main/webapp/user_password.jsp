@@ -63,39 +63,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             </c:forEach>
         </div>
         <div class="info-panel-detail-wrap">
-            <form action="blog?type=modifyUser" method="post" class="panel-detail-wrap" id="modify-user">
-                <div class="detail-wrap flex-row">
-                    <div class="detail-head">账户状态:</div>
+            <form action="blog?type=changePWD" method="post" class="panel-detail-wrap" id="modify-pwd">
+                <div class="detail-wrap">
+                    <div class="detail-head">原密码:</div>
                     <div class="detail-content">
-                        <c:choose>
-                            <c:when test="${user.state == 0}">
-                                <div class="user-state green">正常</div>
-                            </c:when>
-                            <c:when test="${user.state == 1}">
-                                <div class="user-state red">封禁中</div>
-                            </c:when>
-                            <c:otherwise>
-                                <div class="user-state">未知</div>
-                            </c:otherwise>
-                        </c:choose>
+                        <input type="password" name="old-password" id="old-password" maxlength="20" />
                     </div>
+                    <span id="error-old-password"></span>
                 </div>
                 <div class="detail-wrap">
-                    <div class="detail-head">昵称:</div>
+                    <div class="detail-head">新密码:</div>
                     <div class="detail-content">
-                        <input type="text" name="display-name" id="display-name" value="${user.name}" maxlength="20" />
+                        <input type="password" name="new-password" id="new-password" maxlength="20" />
                     </div>
-                </div>
-                <div class="detail-wrap">
-                    <div class="detail-head">用户名:</div>
-                    <div class="detail-content">
-                        <input type="text" name="username" id="username" disabled="disabled" value="${user.userName}"
-                            maxlength="20" />
-                    </div>
+                    <span id="error-new-password"></span>
                 </div>
                 <div class="detail-wrap">
                     <div class="a-button text-algin-center margin-top-10 border-radius-none padding-none height-25 width-200"
-                        onclick="submit_modify_user()">
+                        onclick="change_password()">
                         确认修改
                     </div>
                 </div>

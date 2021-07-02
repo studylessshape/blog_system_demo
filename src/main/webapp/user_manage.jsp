@@ -51,13 +51,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <div class="info-panel-wrap">
         <div class="info-panel-nav-wrap">
             <div class="nav-item" onclick="show(0);">基本信息</div>
+            <div class="nav-item" onclick="show(1);">修改密码</div>
             <c:forEach items="${user_authority}" var="ua">
                 <c:if test="${user.authority == ua.id}">
                     <c:if test="${ua.name eq '系统'}">
-                        <div class="nav-item" onclick="show(1);">用户管理</div>
+                        <div class="nav-item" onclick="show(2);">用户管理</div>
                     </c:if>
                     <c:if test="${ua.name eq '管理员'}">
-                        <div class="nav-item" onclick="show(1);">用户管理</div>
+                        <div class="nav-item" onclick="show(2);">用户管理</div>
                     </c:if>
                 </c:if>
             </c:forEach>
